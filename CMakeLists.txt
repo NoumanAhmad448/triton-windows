@@ -50,8 +50,8 @@ endif()
 
 # Customized release build type with assertions: TritonRelBuildWithAsserts
 if(MSVC)
-  set(CMAKE_C_FLAGS_TRITONRELBUILDWITHASSERTS "-O2")
-  set(CMAKE_CXX_FLAGS_TRITONRELBUILDWITHASSERTS "-O2")
+  set(CMAKE_C_FLAGS_TRITONRELBUILDWITHASSERTS "/O2")
+  set(CMAKE_CXX_FLAGS_TRITONRELBUILDWITHASSERTS "/O2")
 else()
   set(CMAKE_C_FLAGS_TRITONRELBUILDWITHASSERTS "-O2 -g")
   set(CMAKE_CXX_FLAGS_TRITONRELBUILDWITHASSERTS "-O2 -g")
@@ -301,12 +301,17 @@ if (UNIX AND NOT APPLE)
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--exclude-libs,ALL")
 endif()
 
-if(TRITON_BUILD_PYTHON_MODULE AND NOT WIN32)
-  set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
+if(TRITON_BUILD_PYTHON_MODULE)
+  if(WIN32)
+    set(CMAKE_SHARED_LIBRARY_PREFIX "lib")
+    set(CMAKE_SHARED_LIBRARY_SUFFIX ".pyd")
+  else()
+    set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 
-  # Check if the platform is MacOS
-  if(APPLE)
-    set(PYTHON_LDFLAGS "-undefined dynamic_lookup")
+    # Check if the platform is MacOS
+    if(APPLE)
+      set(PYTHON_LDFLAGS "-undefined dynamic_lookup")
+    endif()
   endif()
 
   target_link_libraries(triton PRIVATE ${PYTHON_LDFLAGS})
@@ -319,6 +324,9 @@ if(NOT TRITON_BUILD_PYTHON_MODULE)
 endif()
 
 add_subdirectory(third_party/f2reduce)
+if(WIN32)
+  add_subdirectory(third_party/dlfcn-win32)
+endif()
 add_subdirectory(bin)
 add_subdirectory(test)
 
