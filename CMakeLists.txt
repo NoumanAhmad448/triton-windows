@@ -49,8 +49,13 @@ endif()
 # used conditionally in this file and by lit tests
 
 # Customized release build type with assertions: TritonRelBuildWithAsserts
-set(CMAKE_C_FLAGS_TRITONRELBUILDWITHASSERTS "-O2 -g")
-set(CMAKE_CXX_FLAGS_TRITONRELBUILDWITHASSERTS "-O2 -g")
+if(MSVC)
+  set(CMAKE_C_FLAGS_TRITONRELBUILDWITHASSERTS "-O2")
+  set(CMAKE_CXX_FLAGS_TRITONRELBUILDWITHASSERTS "-O2")
+else()
+  set(CMAKE_C_FLAGS_TRITONRELBUILDWITHASSERTS "-O2 -g")
+  set(CMAKE_CXX_FLAGS_TRITONRELBUILDWITHASSERTS "-O2 -g")
+endif()
 set(CMAKE_C_FLAGS_TRITONBUILDWITHO1 "-O1")
 set(CMAKE_CXX_FLAGS_TRITONBUILDWITHO1 "-O1")
 
@@ -70,7 +75,11 @@ endif()
 
 # Compiler flags
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_FORMAT_MACROS  -fPIC -std=gnu++17")
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_FORMAT_MACROS /Zc:preprocessor")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_FORMAT_MACROS  -fPIC -std=gnu++17")
+endif()
 
 
 # #########
@@ -124,7 +133,9 @@ endfunction()
 
 
 # Disable warnings that show up in external code (gtest;pybind11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-covered-switch-default -fvisibility=hidden")
+if(NOT MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-covered-switch-default -fvisibility=hidden")
+endif()
 
 include_directories(".")
 include_directories(${MLIR_INCLUDE_DIRS})
@@ -244,7 +255,8 @@ if(TRITON_BUILD_PYTHON_MODULE)
           LLVMAArch64CodeGen
           LLVMAArch64AsmParser
       )
-  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+  elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" OR
+         CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64") # Windows
       list(APPEND TRITON_LIBRARIES
           LLVMX86CodeGen
           LLVMX86AsmParser
