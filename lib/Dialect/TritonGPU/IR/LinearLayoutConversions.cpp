@@ -179,7 +179,7 @@ LinearLayout ensureLayoutNotLargerThan(
     }
     assert(actualSize % desiredSize == 0);
     // <inDimName, basisIdx, outValue>
-    std::vector<std::tuple<StringAttr, int, int>> sortedBases;
+    std::vector<std::tuple<StringAttr, size_t, int>> sortedBases;
     for (auto [inDimName, basis] : bases) {
       for (size_t basisIdx = 0; basisIdx < basis.size(); basisIdx++) {
         auto outValue = basis[basisIdx][outDim.index()];

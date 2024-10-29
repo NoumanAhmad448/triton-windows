@@ -60,7 +60,7 @@ applyLinearLayout(Location loc, RewriterBase &rewriter,
   for (auto [inDimName, idx] : indices) {
     if (auto constant = idx.getDefiningOp<LLVM::ConstantOp>()) {
       constantIns.push_back(
-          {inDimName, cast<IntegerAttr>(constant.getValue()).getInt()});
+          {inDimName, (int32_t)cast<IntegerAttr>(constant.getValue()).getInt()});
     } else {
       constantIns.push_back({inDimName, 0});
     }
@@ -195,7 +195,7 @@ bool emitTransferBetweenRegistersAndShared(
         int64_t{1},
         shape[dim] / sharedLegacy.getCTALayout().getCTASplitNum()[dim]);
     multiDimSharedSize.push_back(
-        {str_attr("offset" + std::to_string(dim)), size});
+        {str_attr("offset" + std::to_string(dim)), (int32_t)size});
   }
   multiDimSharedSize.push_back({kBlock, sharedLayout->getInDimSize(kBlock)});
   sharedLayout = sharedLayout->reshapeIns(multiDimSharedSize);

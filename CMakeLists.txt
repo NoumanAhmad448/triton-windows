@@ -71,15 +71,15 @@ if(NOT WIN32)
 endif()
 
 if(TRITON_BUILD_UT)
-  include(AddTritonUnitTest)
+  include(${PROJECT_SOURCE_DIR}/cmake/AddTritonUnitTest.cmake)
 endif()
 
 # Compiler flags
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo /Zc:__STDC__ /Zc:preprocessor /wd4244 /wd4624 /wd4819")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo /Zc:__STDC__ /Zc:preprocessor /utf-8 /wd4244 /wd4624")
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_FORMAT_MACROS  -fPIC -std=gnu++17")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__STDC_FORMAT_MACROS -fPIC -std=gnu++17")
 endif()
 
 
